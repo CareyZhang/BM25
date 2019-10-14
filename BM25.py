@@ -8,8 +8,8 @@ Doc = [doc.strip('\n') for doc in open("doc_list.txt","r")]
 query_cnt = len(Query)
 doc_cnt = len(Doc)
 
-Param_K1 = 1.6
-Param_K3 = 2.4
+Param_K1 = 3
+Param_K3 = 4
 Param_b = 0.75
 Dictionary = {}
 DocLen = np.zeros(doc_cnt)
@@ -38,10 +38,14 @@ TF_ = np.zeros(doc_cnt * ind).reshape((doc_cnt,ind))
 QTF = np.zeros(query_cnt * ind).reshape((query_cnt,ind))
 
 for index, doc in enumerate(Doc):
+	cnt = 0
 	for line in open("Document/"+doc,"r").readlines()[3:]:
 		line = line.split()[0:-1]
 		for word in line:
 			TF[index][Dictionary[word]] += 1
+			cnt += 1
+	TF[index] /= cnt
+	print(TF[index])
 
 for index, query in enumerate(Query):
 	for line in open("Query/"+query,"r"):
