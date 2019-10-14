@@ -11,9 +11,9 @@ f.write("Query,RetrievedDocuments\r\n")
 query_cnt = len(Query)
 doc_cnt = len(Doc)
 
-Param_K1 = 1.8
-Param_K3 = -16.75
-Param_b = 1.1
+Param_K1 = 1.5
+Param_K3 = 3.8
+Param_b = 0.75
 Param_delta = 0.3
 
 for index, query in enumerate(Query):
@@ -32,7 +32,6 @@ for index, query in enumerate(Query):
     word_cnt = ind
     QTF = np.zeros(word_cnt)
     TF = np.zeros(doc_cnt * word_cnt).reshape((doc_cnt,word_cnt))
-    TF_ = np.zeros(doc_cnt * word_cnt).reshape((doc_cnt,word_cnt))
     DF = np.zeros(word_cnt)
     
     for line in open("Query/"+query,"r"):
@@ -56,21 +55,13 @@ for index, query in enumerate(Query):
             if TF[id][ind] > 0:
                 df_cnt += 1
         DF[ind] = df_cnt
-
-    for index in range(doc_cnt):
-        TF_[index] = np.divide(TF[index],((1 - Param_b) + Param_b * DocLen[index] * doc_cnt / np.sum(DocLen))) + Param_delta
-    
-    for index in range(doc_cnt):
-        for ind, val in enumerate(TF_[index]):
-            if val < Param_delta:
-                TF_[index][ind] = 0
         
     SIM = {}
     s1 = np.zeros(word_cnt)
     s2 = np.zeros(word_cnt)
     s3 = np.zeros(word_cnt)
     for ind, doc in enumerate(Doc):
-        s1 = (Param_K1 + 1) * TF_[ind] / (Param_K1 + TF_[ind])
+        s1 = (Param_K1 + 1) * TF[ind] / (Param_K1 * ((1 - Param_b) + Param_b * DocLen[index] * doc_cnt / np.sum(DocLen)) + TF[ind])
         s2 = (Param_K3 + 1) * QTF / (Param_K3 + QTF)
         s3 = np.log(np.divide((doc_cnt - DF + 0.5),(DF + 0.5)))
         s4 = np.sum(s1 * s2 * s3)
