@@ -58,12 +58,14 @@ for index, query in enumerate(Query):
         DF[ind] = df_cnt
 
     for index in range(doc_cnt):
-        TF_[index] = np.divide(TF[index],((1 - Param_b) + Param_b * DocLen[index] * doc_cnt / np.sum(DocLen))) + Param_delta
+        TF_[index] = np.divide(TF[index],((1 - Param_b) + Param_b * DocLen[index] * doc_cnt / np.sum(DocLen)))
     
     for index in range(doc_cnt):
         for ind, val in enumerate(TF_[index]):
-            if val < Param_delta:
+            if TF_[index][ind] < 0:
                 TF_[index][ind] = 0
+            else:
+                TF_[index][ind] += Param_delta
         
     SIM = {}
     s1 = np.zeros(word_cnt)
